@@ -62,13 +62,13 @@ class CNN(nn.Module):
             ),                              # output shape (16, 28, 28)
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=2),    # choose max value in 2x2 area, output shape (16, 14, 14)
-            # nn.Dropout(0.5)
+            nn.Dropout(0.5)
         )
         self.conv2 = nn.Sequential(         # input shape (16, 14, 14)
             nn.Conv2d(16, 32, 5, 1, 2),     # output shape (32, 14, 14)
             nn.ReLU(),
             nn.MaxPool2d(2),                # output shape (32, 7, 7)
-            # nn.Dropout(0.5)
+            nn.Dropout(0.5)
         )
         # self.linear = nn.Linear(32 * 7 * 7, 10)   # fully connected layer, output 10 classes  [batch_size, 10]
         self.linear = nn.Linear(32 * 7 * 7, CLASS_NUM * 2)
@@ -97,7 +97,8 @@ start_time = time.time()
 for epoch in range(EPOCH):
     cnn.train()
     for batch_idx, (train_x, train_y) in enumerate(train_loader):
-
+        
+        # dropout can be used when training, since performing dropout also when testing is the way to model epistemic uncertainty
         mu, sigma = cnn(train_x)
 
         prob_total = torch.zeros((NUM_SAMPLES, train_y.size(0), CLASS_NUM))
